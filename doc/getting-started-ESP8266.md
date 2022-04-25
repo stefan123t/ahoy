@@ -29,17 +29,52 @@ Libraries to be installed in Arduino IDE:
 * TimeLib
 
 Verify & Compile
+
 * Connect to WiFi Network `ESP AHOY`
 * Use password `esp_8266`
 * Connect to Network settings 
 
-Setup
-* WiFi 
-  * Enter SSID `mynetwork`
-  * Enter Password `mypassword`
+# Setup
+
+* WiFi
+  * SSID: `mynetwork`
+  * Password: `mypassword`
+
 * Device Host Name
-  * Enter Device Name `esp-ahoy` 
+  * Device Name: `ESP-AHOY`
+
+Inverter
+
+* Inverter 0
+  * Address: `112173123456`
+  * Name: `Hoymiles HM-400`
+  * Type: HM400
+
+* Inverter 1
+  * Address: `114173123456`
+  * Name: `Hoymiles HM-600`
+  * Type: HM600
+
+* Inverter 2
+  * Address: `116173123456`
+  * Name: `Hoymiles HM-1200`
+  * Type: HM1200
+
 * General
-  * Hoymiles Address (e.g. 114173123456) `11:41:73:12:34:56`
-  * [x] Reboot device after successful save
+  * Interval (ms): 1000
+
+* Pinout (Wemos)
+  * CS: D8 (GPIO15)
+  * CE: D4 (GPIO2)
+  * IRQ: D3 (GPIO0)
+
+* MQTT
+  * Broker / Server IP: 0.0.0.0
+  * Username (optional): 
+  * Password (optional): 
+  * Topic: /inverter
+  * Interval (seconds): 10000
+ 
+[x] Reboot device after successful save
+
 Save
