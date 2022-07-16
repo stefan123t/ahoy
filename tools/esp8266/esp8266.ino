@@ -14,24 +14,39 @@
 #include "app.h"
 #include "config.h"
 
+//SD_logger
+#include <SPI.h>
+#include <SD.h>
+const int chipSelect = 16; //SD-CS pin GPIO16 = D0
+
 app myApp;
 
 //-----------------------------------------------------------------------------
 void setup() {
-    myApp.setup(WIFI_TRY_CONNECT_TIME);
+  myApp.setup(WIFI_TRY_CONNECT_TIME);
 
-    // TODO: move to HmRadio
-    attachInterrupt(digitalPinToInterrupt(myApp.getIrqPin()), handleIntr, FALLING);
+  // TODO: move to HmRadio
+  attachInterrupt(digitalPinToInterrupt(myApp.getIrqPin()), handleIntr, FALLING);
+
+  if (!SD.begin(chipSelect)) {
+    Serial.println("SD card failed, or not present");
+    // don't do anything more:
+    return;
+  }
+  Serial.println("SD card initialized.");
+
 }
 
 
 //-----------------------------------------------------------------------------
 void loop() {
-    myApp.loop();
+  myApp.loop();
+
+  
 }
 
 
 //-----------------------------------------------------------------------------
 ICACHE_RAM_ATTR void handleIntr(void) {
-    myApp.handleIntr();
+  myApp.handleIntr();
 }

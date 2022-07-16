@@ -311,6 +311,7 @@ void Main::showUptime(void) {
     snprintf(time, 20, "%d Tage, %02d:%02d:%02d", upTimeDy, upTimeHr, upTimeMn, upTimeSc);
 
     mWeb->send(200, "text/plain", String(time));
+
 }
 
 
@@ -447,6 +448,7 @@ String Main::getDateTimeStr(time_t t) {
     else
         sprintf(str, "%04d-%02d-%02d %02d:%02d:%02d", year(t), month(t), day(t), hour(t), minute(t), second(t));
     return String(str);
+    
 }
 
 

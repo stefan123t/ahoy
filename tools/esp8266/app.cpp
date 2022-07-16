@@ -10,6 +10,9 @@
 #include "html/h/setup_html.h"
 #include "html/h/hoymiles_html.h"
 
+//SD_logger
+#include <SD.h>
+#include <TimeLib.h>
 
 //-----------------------------------------------------------------------------
 app::app() : Main() {
@@ -287,27 +290,38 @@ void app::loop(void) {
             mMqtt.sendMsg("uptime", val);
         }
 
-        if(mSerialValues) {
-            if(++mSerialTicker >= mSerialInterval) {
-                mSerialTicker = 0;
-                char topic[30], val[10];
-                for(uint8_t id = 0; id < mSys->getNumInverters(); id++) {
-                    Inverter<> *iv = mSys->getInverterByPos(id);
-                    if(NULL != iv) {
-                        if(iv->isAvailable(mTimestamp)) {
-                            for(uint8_t i = 0; i < iv->listLen; i++) {
-                                if(0.0f != iv->getValue(i)) {
-                                    snprintf(topic, 30, "%s/ch%d/%s", iv->name, iv->assign[i].ch, iv->getFieldName(i));
-                                    snprintf(val, 10, "%.3f %s", iv->getValue(i), iv->getUnit(i));
-                                    DPRINTLN(DBG_INFO, String(topic) + ": " + String(val));
-                                }
-                                yield();
-                            }
-                        }
-                    }
+    if (mSerialValues) {
+      if (++mSerialTicker >= mSerialInterval) {
+        String logFilename = (getDateTimeStr(mTimestamp)); //get current time in format yyyy-mm-dd hh:mm:ss
+        logFilename.remove(10, 9); //remove hh:mm:ss from yyyy-mm-dd hh:mm:ss including space between dd and hh
+        logFilename += ".csv";
+        //Serial.println(logFilename); //for debug only
+        File dataFile = SD.open(logFilename, FILE_WRITE);  //open or create file on SD card
+        mSerialTicker = 0;
+        char topic[30], val[10];
+        for (uint8_t id = 0; id < mSys->getNumInverters(); id++) {
+          Inverter<> *iv = mSys->getInverterByPos(id);
+          if (NULL != iv) {
+            if (iv->isAvailable(mTimestamp)) {
+              for (uint8_t i = 0; i < iv->listLen; i++) {
+                if (0.0f != iv->getValue(i)) {
+                  snprintf(topic, 30, "%s/ch%d/%s", iv->name, iv->assign[i].ch, iv->getFieldName(i));
+                  dataFile.print(topic); //write to SD card
+                  dataFile.print(","); //write "," to SD card in same line for csv format
+                  snprintf(val, 10, "%.3f %s", iv->getValue(i), iv->getUnit(i));
+                  dataFile.print(val); //write to SD card
+                  dataFile.print(","); //write "," to SD card in same line for csv format
+                  DPRINTLN(DBG_INFO, String(topic) + ": " + String(val));
                 }
+                yield();
+              }
             }
+          }
         }
+        dataFile.println(" "); //start new line in logfile
+        dataFile.close();  //close file on SD card
+      }
+    }
 
         if(++mSendTicker >= mSendInterval) {
             mSendTicker = 0;
